@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -17,7 +19,7 @@ namespace AzureAppExapmle.Controllers
 
         private CloudBlobContainer GetCloudBlobContainer()
         {
-            string connString = "";// use Access Key on azure portal to get conn string
+            string connString = Config.connString;
             string containerName = "pictures";
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connString);
@@ -26,32 +28,39 @@ namespace AzureAppExapmle.Controllers
             return container;
         }
 
-        public string UploadBlob()
+       [HttpPost]
+        public string UploadBlob(IFormFile formFile)
         {
+            var filePath = Path.GetTempFileName();
+
+
             CloudBlobContainer container = GetCloudBlobContainer();
-            CloudBlockBlob blob = container.GetBlockBlobReference("sample");
-            using (var fileStream = System.IO.File.OpenRead(@"d:\sample.txt"))
+            CloudBlockBlob blob = container.GetBlockBlobReference(formFile.FileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
+                formFile.CopyTo(fileStream);
                 blob.UploadFromStreamAsync(fileStream).GetAwaiter().GetResult();
             }
             return "success!";
         }
 
-        public string DownloadBlob()
+        [HttpPost]
+        public string DownloadBlob(string name)
         {
             CloudBlobContainer container = GetCloudBlobContainer();
-            CloudBlockBlob blob = container.GetBlockBlobReference("sample");
-            using (var fileStream = System.IO.File.OpenWrite(@"d:\downloadedBlob.txt"))
+            CloudBlockBlob blob = container.GetBlockBlobReference(name);
+            using (var fileStream = System.IO.File.OpenWrite($@"c:\{name}"))
             {
                 blob.DownloadToStreamAsync(fileStream).GetAwaiter().GetResult();
             }
             return "success!";
         }
 
-        public string DeleteBlob()
+        [HttpPost]
+        public string DeleteBlob(string name)
         {
             CloudBlobContainer container = GetCloudBlobContainer();
-            CloudBlockBlob blob = container.GetBlockBlobReference("sample");
+            CloudBlockBlob blob = container.GetBlockBlobReference(name);
             blob.DeleteAsync().GetAwaiter().GetResult();
             return "success!";
         }
@@ -62,6 +71,7 @@ namespace AzureAppExapmle.Controllers
             List<string> blobs = new List<string>();
 
             BlobContinuationToken continuationToken = null;
+
             do
             {
                 var response = container.ListBlobsSegmentedAsync(continuationToken).GetAwaiter().GetResult();

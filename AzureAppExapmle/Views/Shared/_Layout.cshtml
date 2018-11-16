@@ -49,11 +49,43 @@
         <br>
         <br>
 
-        @Html.ActionLink("Upload blob", "UploadBlob", "Blobs")
+
+        <form method="post" asp-controller="Blobs" asp-action="UploadBlob" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="file" name="formFile" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="submit" value="Upload" />
+                </div>
+            </div>
+        </form>
+
         <br>
-        @Html.ActionLink("Download blob", "DownloadBlob", "Blobs")
         <br>
-        @Html.ActionLink("Delete blob", "DeleteBlob", "Blobs")
+        <br>
+        <br>
+        <form method="post" asp-controller="Blobs" asp-action="DownloadBlob">
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="text" name="name" />
+                    <input type="submit" value="download" />
+                </div>
+            </div>
+        </form>
+
+        <br>
+        <br>
+        <form method="post" asp-controller="Blobs" asp-action="DeleteBlob">
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="text" name="name" />
+                    <input type="submit" value="delete" />
+                </div>
+            </div>
+        </form>
 
         <hr />
         <footer>
