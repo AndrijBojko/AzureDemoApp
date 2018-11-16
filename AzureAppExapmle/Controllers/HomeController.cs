@@ -5,13 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AzureAppExapmle.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AzureAppExapmle.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         ExampleDBContext _context = new ExampleDBContext();
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View(_context.Product.FirstOrDefault());
