@@ -51,7 +51,7 @@ namespace AzureAppExapmle.Controllers
         {
             CloudBlobContainer container = GetCloudBlobContainer();
             CloudBlockBlob blob = container.GetBlockBlobReference(name);
-            using (var fileStream = System.IO.File.OpenWrite($@"c:\{name}"))
+            using (var fileStream = System.IO.File.OpenWrite($@"d:\{name}"))
             {
                 blob.DownloadToStreamAsync(fileStream).GetAwaiter().GetResult();
             }

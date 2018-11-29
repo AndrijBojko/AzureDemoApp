@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AzureAppExapmle.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
 
 namespace AzureAppExapmle.Controllers
 {
@@ -27,10 +28,30 @@ namespace AzureAppExapmle.Controllers
             return View();
         }
 
-        public IActionResult Contact()
+        public IActionResult Contact(string name)
         {
-            ViewData["Message"] = "Your contact page.";
+            string azureBaseUrl = "https://exampleappfunc.azurewebsites.net/api/HttpTrigger1"; // url to azure function
+            string urlQueryStringParams = $"?code=...&name={name}"; // can be found on azure portal
 
+
+            if (name != null) {
+                using (HttpClient client = new HttpClient())
+                {
+                    using (HttpResponseMessage res = client.GetAsync($"{azureBaseUrl}{urlQueryStringParams}").GetAwaiter().GetResult())
+                    {
+                        using (HttpContent content = res.Content)
+                        {
+                            string data = content.ReadAsStringAsync().GetAwaiter().GetResult();
+                            if (data != null)
+                            {
+                                ViewData["Message"] = data;
+                            }
+                            else
+                                ViewData["Message"] = "";
+                        }
+                    }
+                }
+            }
             return View();
         }
 
