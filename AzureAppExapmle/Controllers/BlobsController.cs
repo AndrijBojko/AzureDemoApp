@@ -21,7 +21,7 @@ namespace AzureAppExapmle.Controllers
 
         private CloudBlobContainer GetCloudBlobContainer()
         {
-            string connString = Config.connString;
+            string connString = Config.connString; //conn string to azure, can find in Aceess Keys
             string containerName = "pictures";
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connString);
